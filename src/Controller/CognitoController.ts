@@ -1,7 +1,7 @@
 import AWS, { CognitoIdentityServiceProvider } from 'aws-sdk';
 
 export default class CSCognito{
-    private clientId:string = '1i4q9e2v032tbp3g31v7vu6klf';
+    readonly clientId:string = '1i4q9e2v032tbp3g31v7vu6klf';
     private pool:CognitoIdentityServiceProvider;
     constructor(){
         this.pool = new AWS.CognitoIdentityServiceProvider();
@@ -20,6 +20,7 @@ export default class CSCognito{
             console.log(data);
         } catch (error) {
             console.log(error);
+            return false;
         }
 
         return true;

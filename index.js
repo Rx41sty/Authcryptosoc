@@ -1,7 +1,14 @@
 import express from 'express';
+import { readdirSync } from 'fs';
 import { router } from './src/api/signup.js';
 const app = express();
 const port = 3000;
+let arr = readdirSync('./src/api/');
+arr = arr.filter(file => file.match(new RegExp(`.*\.(${'.ts'})`, 'ig')));
+for (let file of arr) {
+    console.log(file.slice(0, file.length - 3));
+}
+console.log(arr);
 // 
 // try {
 //   const data = await cognito.signUp(params).promise();

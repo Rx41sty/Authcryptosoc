@@ -1,7 +1,5 @@
 import express from 'express';
-import CSCognito from './src/Controller/CognitoController'
-import {readdirSync} from 'fs';
-import {router} from './src/api/signup.js';
+import CSCognito from './src/Controller/CognitoController.js'
 
 const app = express();
 const port = 3000;
@@ -23,14 +21,26 @@ const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-let arr:string[] = readdirSync('./src/api/');
-arr = arr.filter( file => file.match(new RegExp(`.*\.(${'.ts'})`, 'ig')));
-for(let file of arr){
-  let routeName = file.slice(0, file.length-3) + "Router";
-  console.log(routeName);
-  app.use('/', routeName);
-}
-app.use('/', router);
+app.post('/signup', (req, res) => {
+  console.log("Inside Signup");
+
+  // Verify username/password/email
+  
+  let cognito = new CSCognito();
+  cognito.signUp(req.body.username, req.body.password, req.body.email);
+  res.send(req.body.username);
+});
+
+app.post('/signin', (req, res) => {
+  console.log("Inside Signin");
+
+  // Verify username/password/email
+  
+  let cognito = new CSCognito();
+  cognito.signIn(req.body.username, req.body.password);
+
+});
+
 // app.get('/', (req, res) => {
 //   res.send('Hello mama!')
 // });

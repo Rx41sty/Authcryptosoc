@@ -1,14 +1,7 @@
 import express from 'express';
-import { readdirSync } from 'fs';
-import { router } from './src/api/signup.js';
+import CSCognito from './src/Controller/CognitoController.js';
 const app = express();
 const port = 3000;
-let arr = readdirSync('./src/api/');
-arr = arr.filter(file => file.match(new RegExp(`.*\.(${'.ts'})`, 'ig')));
-for (let file of arr) {
-    console.log(file.slice(0, file.length - 3));
-}
-console.log(arr);
 // 
 // try {
 //   const data = await cognito.signUp(params).promise();
@@ -18,7 +11,19 @@ console.log(arr);
 //}
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/', router);
+app.post('/signup', (req, res) => {
+    console.log("Inside Signup");
+    // Verify username/password/email
+    let cognito = new CSCognito();
+    cognito.signUp(req.body.username, req.body.password, req.body.email);
+    res.send(req.body.username);
+});
+app.post('/signin', (req, res) => {
+    console.log("Inside Signin");
+    // Verify username/password/email
+    let cognito = new CSCognito();
+    cognito.signIn(req.body.username, req.body.password);
+});
 // app.get('/', (req, res) => {
 //   res.send('Hello mama!')
 // });

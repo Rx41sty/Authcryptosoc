@@ -15,4 +15,14 @@ export default class AuthController {
             res.status(400).send(err.message);
         }
     }
+
+    public async signUp(req:Request, res:Response){
+        let {username, password, email} = req.body;
+        try{
+            await this.cognito.signUp(username, password, email);
+            res.status(200).send("Successfully Registered");
+        }catch(err:any){
+            res.status(400).send(err.message);
+        }
+    }
 }

@@ -12,14 +12,15 @@ export default class CognitoService {
             UserAttributes: [{ Name: 'email', Value: email }]
         };
         try {
-            const data = await this.cognitoService.signUp(params).promise();
-            console.log(data);
+            await this.cognitoService.signUp(params).promise();
         }
         catch (error) {
+            if (error.code === "UsernameExistsException")
+                throw new Error("Username already exists");
+            //At last
             console.log(error);
-            return false;
+            throw new Error("Unknown error during registration");
         }
-        return true;
     }
     async signIn(username, password) {
         let params = {
@@ -36,6 +37,8 @@ export default class CognitoService {
         catch (error) {
             if (error.code === "NotAuthorizedException")
                 throw new Error("Username or password is incorrect");
+            console.log(error);
+            throw new Error("Unknown error during authentication");
         }
     }
 }

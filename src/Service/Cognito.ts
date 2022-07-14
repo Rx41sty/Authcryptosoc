@@ -7,23 +7,23 @@ export default class CognitoService{
         this.cognitoService = new AWS.CognitoIdentityServiceProvider();
     }
 
-    public async signUp(username:string, password:string, email:string):Promise<Boolean>{
-        var params = {
-            ClientId: this.clientId,
-            Username: username,
-            Password: password,
-            UserAttributes: [{Name: 'email', Value: email}]
-        };
+    public async signUp(username:string, password:string, email:string):Promise<void>{
+      var params = {
+          ClientId: this.clientId,
+          Username: username,
+          Password: password,
+          UserAttributes: [{Name: 'email', Value: email}]
+      };
+      
+      try {
+        await this.cognitoService.signUp(params).promise();
+      } catch (error:any) {
+        if(error.code === "UsernameExistsException") throw new Error("Username already exists");
 
-         try {
-            const data = await this.cognitoService.signUp(params).promise();
-            console.log(data);
-        } catch (error) {
-            console.log(error);
-            return false;
-        }
-
-        return true;
+        //At last
+        console.log(error);
+        throw new Error("Unknown error during registration");
+      }
     }
     
   public async signIn(username: string, password: string): Promise<void> {
@@ -40,6 +40,9 @@ export default class CognitoService{
       await this.cognitoService.initiateAuth(params).promise();
     } catch (error:any) {
       if(error.code === "NotAuthorizedException") throw new Error("Username or password is incorrect");
+
+      console.log(error);
+      throw new Error("Unknown error during authentication");
     }
   }
 

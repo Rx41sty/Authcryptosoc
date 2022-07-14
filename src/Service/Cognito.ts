@@ -1,4 +1,4 @@
-import AWS, { CognitoIdentityServiceProvider } from 'aws-sdk';
+import AWS, { CognitoIdentityServiceProvider, AWSError } from 'aws-sdk';
 
 export default class CognitoService{
     readonly clientId:string = process.env.AWS_COGNITO_CLIENT_ID!;
@@ -26,7 +26,7 @@ export default class CognitoService{
         return true;
     }
     
-  public async signIn(username: string, password: string): Promise<boolean> {
+  public async signIn(username: string, password: string): Promise<void> {
     let params = {
       AuthFlow: 'USER_PASSWORD_AUTH',
       ClientId: this.clientId,
@@ -37,12 +37,9 @@ export default class CognitoService{
     }
 
     try {
-      let data = await this.cognitoService.initiateAuth(params).promise();
-      console.log(data); 
-      return true;
-    } catch (error) {
-      console.log(error)
-      return false;
+      await this.cognitoService.initiateAuth(params).promise();
+    } catch (error:any) {
+      if(error.code === "NotAuthorizedException") throw new Error("Username or password is incorrect");
     }
   }
 

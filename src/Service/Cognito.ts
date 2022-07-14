@@ -1,6 +1,6 @@
 import AWS, { CognitoIdentityServiceProvider } from 'aws-sdk';
 
-export default class CSCognito{
+export default class CognitoService{
     readonly clientId:string = process.env.AWS_COGNITO_CLIENT_ID!;
     private cognitoService:CognitoIdentityServiceProvider;
     constructor(){

@@ -1,6 +1,6 @@
 import express from 'express';
 import { CognitoJwtVerifier } from "aws-jwt-verify";
-import CSCognito from './src/Controller/CognitoController.js'
+import CSCognito from './src/Service/Cognito.js'
 
 const app = express();
 const port = 3000;

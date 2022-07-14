@@ -1,7 +1,7 @@
 import AWS, { CognitoIdentityServiceProvider } from 'aws-sdk';
 
 export default class CSCognito{
-    readonly clientId:string = '1i4q9e2v032tbp3g31v7vu6klf';
+    readonly clientId:string = process.env.AWS_COGNITO_CLIENT_ID!;
     private cognitoService:CognitoIdentityServiceProvider;
     constructor(){
         this.cognitoService = new AWS.CognitoIdentityServiceProvider();
@@ -45,5 +45,7 @@ export default class CSCognito{
       return false;
     }
   }
+
+  
 
 }

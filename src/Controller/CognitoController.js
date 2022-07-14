@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 export default class CSCognito {
     constructor() {
-        this.clientId = '1i4q9e2v032tbp3g31v7vu6klf';
+        this.clientId = process.env.AWS_COGNITO_CLIENT_ID;
         this.cognitoService = new AWS.CognitoIdentityServiceProvider();
     }
     async signUp(username, password, email) {

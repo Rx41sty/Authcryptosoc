@@ -3,18 +3,10 @@ import express from 'express';
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 import CognitoSC from './src/Service/Cognito.js'
 import authController from './src/Controller/Auth.js';
+import app from './src/Setup.js';
 
-const app = express();
+
 const port = 3000;
-const container = awilix.createContainer({
-  injectionMode: awilix.InjectionMode.CLASSIC
-});
-
-container.register({
-  CognitoSC: awilix.asClass(CognitoSC),
-  authController: awilix.asClass(authController)
-});
-let Auth = container.resolve('authController');
 
 // async function verifytoken(token:any):Promise<boolean>{
 //   const verifier = CognitoJwtVerifier.create({
@@ -31,16 +23,7 @@ let Auth = container.resolve('authController');
 // }
 //   return true;
 // }
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-app.post('/signup', (req, res) => {
-  Auth.signUp(req, res);
-});
-
-app.post('/signin', (req, res) => {
-  Auth.signIn(req, res);
-});
 
 // Don't judge me
 // app.post('/verify', (req, res) => {

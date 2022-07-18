@@ -1,4 +1,5 @@
 import AWS, { CognitoIdentityServiceProvider, AWSError } from 'aws-sdk';
+import {CustomError, ErrorNM} from '../Error';
 
 export default class CognitoService{
     readonly clientId:string = process.env.AWS_COGNITO_CLIENT_ID!;
@@ -18,11 +19,11 @@ export default class CognitoService{
       try {
         await this.cognitoService.signUp(params).promise();
       } catch (error:any) {
-        if(error.code === "UsernameExistsException") throw new Error("Username already exists");
+        if(error.code === "UsernameExistsException") throw new CustomError(ErrorNM.UsernameExists);
 
-        //At last
+
         console.log(error);
-        throw new Error("Unknown error during registration");
+        throw new CustomError(ErrorNM.Unknown);
       }
     }
     
@@ -39,10 +40,10 @@ export default class CognitoService{
     try {
       await this.cognitoService.initiateAuth(params).promise();
     } catch (error:any) {
-      if(error.code === "NotAuthorizedException") throw new Error("Username or password is incorrect");
+      if(error.code === "NotAuthorizedException") throw new CustomError(ErrorNM.NotAuthorized);
 
       console.log(error);
-      throw new Error("Unknown error during authentication");
+      throw new CustomError(ErrorNM.Unknown);
     }
   }
 

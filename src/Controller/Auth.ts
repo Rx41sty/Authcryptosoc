@@ -1,5 +1,6 @@
 import {Request, Response} from 'express';
 import CognitoService from '../Service/Cognito';
+import {CustomError, ErrorNM} from '../Error';
 export default class AuthController {
     private cognito:CognitoService;
     constructor(CognitoSC:CognitoService){

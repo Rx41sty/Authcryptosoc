@@ -1,25 +1,27 @@
-export default class AuthController {
+import BaseController from './Base.js';
+export default class AuthController extends BaseController {
     constructor(CognitoSC) {
+        super();
         this.cognito = CognitoSC;
     }
     async signIn(req, res) {
         let { username, password } = req.body;
         try {
             await this.cognito.signIn(username, password);
-            res.status(200).send("Successfully authenticated");
+            this.handleResponse(res);
         }
         catch (err) {
-            res.status(400).send(err.message);
+            this.handleException(res, err);
         }
     }
     async signUp(req, res) {
         let { username, password, email } = req.body;
         try {
             await this.cognito.signUp(username, password, email);
-            res.status(200).send("Successfully Registered");
+            this.handleResponse(res);
         }
         catch (err) {
-            res.status(400).send(err.message);
+            this.handleException(res, err);
         }
     }
 }

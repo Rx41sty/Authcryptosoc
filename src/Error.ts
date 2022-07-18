@@ -19,7 +19,6 @@ export class CustomError extends Error{
 
 }
 
-
 export enum ErrorNM{
     UsernameExists,
     NotAuthorized,

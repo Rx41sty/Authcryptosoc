@@ -1,7 +1,7 @@
 import awilix from 'awilix';
 import express from 'express';
 import CognitoSC from './src/Service/Cognito.js';
-import authCT from './src/Controller/Auth.js';
+import authController from './src/Controller/Auth.js';
 const app = express();
 const port = 3000;
 const container = awilix.createContainer({
@@ -9,9 +9,9 @@ const container = awilix.createContainer({
 });
 container.register({
     CognitoSC: awilix.asClass(CognitoSC),
-    authCT: awilix.asClass(authCT)
+    authController: awilix.asClass(authController)
 });
-let Auth = container.resolve('authCT');
+let Auth = container.resolve('authController');
 // async function verifytoken(token:any):Promise<boolean>{
 //   const verifier = CognitoJwtVerifier.create({
 //     userPoolId: process.env.AWS_COGNITO_USER_POOL_ID!,

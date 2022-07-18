@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import { CustomError, ErrorNM } from '../Error.js';
 export default class CognitoService {
     constructor() {
         this.clientId = process.env.AWS_COGNITO_CLIENT_ID;
@@ -16,10 +17,9 @@ export default class CognitoService {
         }
         catch (error) {
             if (error.code === "UsernameExistsException")
-                throw new Error("Username already exists");
-            //At last
+                throw new CustomError(ErrorNM.UsernameExists);
             console.log(error);
-            throw new Error("Unknown error during registration");
+            throw new CustomError(ErrorNM.Unknown);
         }
     }
     async signIn(username, password) {
@@ -36,9 +36,9 @@ export default class CognitoService {
         }
         catch (error) {
             if (error.code === "NotAuthorizedException")
-                throw new Error("Username or password is incorrect");
+                throw new CustomError(ErrorNM.NotAuthorized);
             console.log(error);
-            throw new Error("Unknown error during authentication");
+            throw new CustomError(ErrorNM.Unknown);
         }
     }
 }

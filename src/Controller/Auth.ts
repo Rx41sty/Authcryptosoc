@@ -1,9 +1,11 @@
 import {Request, Response} from 'express';
 import CognitoService from '../Service/Cognito';
-import {CustomError, ErrorNM} from '../Error';
-export default class AuthController {
+import BaseController from './Base.js';
+
+export default class AuthController extends BaseController{
     private cognito:CognitoService;
     constructor(CognitoSC:CognitoService){
+        super();
         this.cognito = CognitoSC;
     }
 
@@ -11,9 +13,9 @@ export default class AuthController {
         let {username, password} = req.body;
         try{
             await this.cognito.signIn(username, password);
-            res.status(200).send("Successfully authenticated");
+            this.handleResponse(res);
         }catch(err:any){
-            res.status(400).send(err.message);
+            this.handleException(res, err);
         }
     }
 
@@ -21,9 +23,9 @@ export default class AuthController {
         let {username, password, email} = req.body;
         try{
             await this.cognito.signUp(username, password, email);
-            res.status(200).send("Successfully Registered");
+            this.handleResponse(res);
         }catch(err:any){
-            res.status(400).send(err.message);
+            this.handleException(res, err);
         }
     }
 }

@@ -1,10 +1,12 @@
 import AWS, { CognitoIdentityServiceProvider, AWSError, SharedIniFileCredentials } from 'aws-sdk';
 import {CustomError, ErrorNM} from '../Error.js';
+import Base from './Base.js';
 
-export default class CognitoService{
+export default class CognitoService extends Base{
     readonly clientId:string = process.env.AWS_COGNITO_CLIENT_ID!;
     private cognitoService:CognitoIdentityServiceProvider;
     constructor(){
+        super();
         this.cognitoService = new AWS.CognitoIdentityServiceProvider();
     }
 
@@ -21,8 +23,7 @@ export default class CognitoService{
       } catch (error:any) {
         if(error.code === "UsernameExistsException") throw new CustomError(ErrorNM.UsernameExists);
 
-        console.log(error);
-        throw new CustomError(ErrorNM.Unknown);
+        this.handleUnkownException(error);
       }
     }
     
@@ -37,12 +38,12 @@ export default class CognitoService{
       };
 
       try {
-        await this.cognitoService.initiateAuth(params).promise();
+        let response = await this.cognitoService.initiateAuth(params).promise();
+        console.log(response);
       } catch (error:any) {
         if(error.code === "NotAuthorizedException") throw new CustomError(ErrorNM.NotAuthorized);
 
-        console.log(error);
-        throw new CustomError(ErrorNM.Unknown);
+        this.ha
       }
     }
 
@@ -53,7 +54,10 @@ export default class CognitoService{
       try{
         await this.cognitoService.deleteUser(params).promise();
       }catch(error:any){
-        
+        if(error.code === "NotAuthorizedException") throw new CustomError(ErrorNM.IncorrectToken);
+
+        console.log(error);
+        throw new CustomError(ErrorNM.Unknown);
       }
     }
 

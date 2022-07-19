@@ -2,6 +2,7 @@ export class CustomError extends Error{
     private errorMap = new Map([
         [ErrorNM.UsernameExists, "Username Already Exists"],
         [ErrorNM.NotAuthorized, "Username or password is incorrect"],
+        [ErrorNM.IncorrectToken, "You are not logged in"],
 
         [ErrorNM.Unknown, "Unknown error"]
     ]);
@@ -22,5 +23,7 @@ export class CustomError extends Error{
 export enum ErrorNM{
     UsernameExists,
     NotAuthorized,
+    IncorrectToken,
+
     Unknown
 }

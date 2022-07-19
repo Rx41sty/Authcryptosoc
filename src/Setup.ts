@@ -25,4 +25,7 @@ app.post('/signin', (req, res) => {
   Auth.signIn(req, res);
 });
 
+app.get('/delete', (req, res) => {
+  Auth.delete(req, res);
+});
 export default app;

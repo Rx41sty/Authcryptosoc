@@ -1,17 +1,16 @@
-import awilix, { asClass } from 'awilix';
+import {createContainer, asClass, InjectionMode} from 'awilix';
 import express from 'express';
 import CognitoSC from './Service/Cognito.js'
 import authController from './Controller/Auth.js';
 
 const app = express();
-
-const container = awilix.createContainer({
-  injectionMode: awilix.InjectionMode.CLASSIC
+const container = createContainer({
+  injectionMode: InjectionMode.CLASSIC
 });
 
 container.register({
-  CognitoSC: awilix.asClass(CognitoSC),
-  authController: awilix.asClass(authController)
+  CognitoSC: asClass(CognitoSC),
+  authController: asClass(authController)
 });
 let Auth = container.resolve('authController');
 

@@ -1,4 +1,4 @@
-import AWS, { CognitoIdentityServiceProvider, AWSError } from 'aws-sdk';
+import AWS, { CognitoIdentityServiceProvider, AWSError, SharedIniFileCredentials } from 'aws-sdk';
 import {CustomError, ErrorNM} from '../Error.js';
 
 export default class CognitoService{
@@ -26,25 +26,36 @@ export default class CognitoService{
       }
     }
     
-  public async signIn(username: string, password: string): Promise<void> {
-    let params = {
-      AuthFlow: 'USER_PASSWORD_AUTH',
-      ClientId: this.clientId,
-      AuthParameters: {
-        'USERNAME': username,
-        'PASSWORD': password
-      },
-    };
+    public async signIn(username: string, password: string): Promise<void> {
+      let params = {
+        AuthFlow: 'USER_PASSWORD_AUTH',
+        ClientId: this.clientId,
+        AuthParameters: {
+          'USERNAME': username,
+          'PASSWORD': password
+        },
+      };
 
-    try {
-      await this.cognitoService.initiateAuth(params).promise();
-    } catch (error:any) {
-      if(error.code === "NotAuthorizedException") throw new CustomError(ErrorNM.NotAuthorized);
+      try {
+        await this.cognitoService.initiateAuth(params).promise();
+      } catch (error:any) {
+        if(error.code === "NotAuthorizedException") throw new CustomError(ErrorNM.NotAuthorized);
 
-      console.log(error);
-      throw new CustomError(ErrorNM.Unknown);
+        console.log(error);
+        throw new CustomError(ErrorNM.Unknown);
+      }
     }
-  }
+
+    public async delete(token:string):Promise<void>{
+      let params = {
+        "AccessToken": token
+      }
+      try{
+        await this.cognitoService.deleteUser(params).promise();
+      }catch(error:any){
+        
+      }
+    }
 
   
 

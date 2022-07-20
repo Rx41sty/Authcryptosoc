@@ -34,6 +34,11 @@ export default class AuthController extends BaseController{
         }
     }
 
+    public async signout(req:Request, res:Response){
+        res.clearCookie('token');
+        this.handleResponse(res);
+    }
+
     public async delete(req:Request, res:Response){
         let token:string = "";
         if(req.cookies !== undefined && req.cookies['token'] !== undefined){
@@ -49,11 +54,6 @@ export default class AuthController extends BaseController{
         }catch(err:any){
             this.handleException(res, err);
         }
-    }
-
-    public async signout(req:Request, res:Response){
-        res.clearCookie('token');
-        this.handleResponse(res);
     }
 
     public verifytoken = async (req:Request, res:Response, next:NextFunction) => {

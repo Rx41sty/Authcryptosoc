@@ -19,7 +19,6 @@ export class CustomError extends Error{
     public getErrorCode():number{
         return this.errorCode!;
     }
-
 }
 
 export enum ErrorNM{

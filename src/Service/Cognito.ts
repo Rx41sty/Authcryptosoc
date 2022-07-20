@@ -1,10 +1,11 @@
-import AWS, { CognitoIdentityServiceProvider, AWSError, SharedIniFileCredentials } from 'aws-sdk';
+import AWS from 'aws-sdk';
+
 import {CustomError, ErrorNM} from '../Error.js';
 import Base from './Base.js';
 
 export default class CognitoService extends Base{
     readonly clientId:string = process.env.AWS_COGNITO_CLIENT_ID!;
-    private cognitoService:CognitoIdentityServiceProvider;
+    private cognitoService: AWS.CognitoIdentityServiceProvider;
     constructor(){
         super();
         this.cognitoService = new AWS.CognitoIdentityServiceProvider();

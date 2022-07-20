@@ -27,7 +27,7 @@ export default class CognitoService extends Base{
       }
     }
     
-    public async signIn(username: string, password: string): Promise<void> {
+    public async signIn(username: string, password: string): Promise<string> {
       let params = {
         AuthFlow: 'USER_PASSWORD_AUTH',
         ClientId: this.clientId,
@@ -38,26 +38,28 @@ export default class CognitoService extends Base{
       };
 
       try {
-        let response = await this.cognitoService.initiateAuth(params).promise();
-        console.log(response);
+        let { AuthenticationResult } = await this.cognitoService.initiateAuth(params).promise();
+        return AuthenticationResult !== undefined ?  AuthenticationResult.AccessToken! : ""; 
+  
       } catch (error:any) {
         if(error.code === "NotAuthorizedException") throw new CustomError(ErrorNM.NotAuthorized);
+        if(error.code === "UserNotConfirmedException") throw new CustomError(ErrorNM.UserNotConfirmed);
 
-        this.ha
+        this.handleUnkownException(error);
       }
     }
 
     public async delete(token:string):Promise<void>{
       let params = {
         "AccessToken": token
-      }
+      };
+
       try{
         await this.cognitoService.deleteUser(params).promise();
       }catch(error:any){
         if(error.code === "NotAuthorizedException") throw new CustomError(ErrorNM.IncorrectToken);
 
-        console.log(error);
-        throw new CustomError(ErrorNM.Unknown);
+        this.handleUnkownException(error);
       }
     }
 

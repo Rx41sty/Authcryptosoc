@@ -3,6 +3,7 @@ export class CustomError extends Error{
         [ErrorNM.UsernameExists, "Username Already Exists"],
         [ErrorNM.NotAuthorized, "Username or password is incorrect"],
         [ErrorNM.IncorrectToken, "You are not logged in"],
+        [ErrorNM.UserNotConfirmed, "Username is not confirmed"],
 
         [ErrorNM.Unknown, "Unknown error"]
     ]);
@@ -24,6 +25,8 @@ export enum ErrorNM{
     UsernameExists,
     NotAuthorized,
     IncorrectToken,
+    UserNotConfirmed,
+    
 
     Unknown
 }

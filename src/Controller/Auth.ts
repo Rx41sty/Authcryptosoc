@@ -23,7 +23,9 @@ export default class AuthController extends BaseController{
     public async signIn(req:Request, res:Response){
         let {username, password} = req.body;
         try{
-            await this.cognito.signIn(username, password);
+            let token:string =  await this.cognito.signIn(username, password);
+            console.log(token);
+            res.cookie('token', token);//{httpOnly: true});
             this.handleResponse(res);
         }catch(err:any){
             this.handleException(res, err);
@@ -41,10 +43,16 @@ export default class AuthController extends BaseController{
         }
         
         try{
+            console.log(typeof cookie);
+            console.log(cookie);
             await this.cognito.delete(cookie);
             this.handleResponse(res);
         }catch(err:any){
             this.handleException(res, err);
         }
+    }
+
+    public async logout(req:Request, res:Response){
+        
     }
 }

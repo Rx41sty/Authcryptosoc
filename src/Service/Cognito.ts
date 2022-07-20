@@ -58,7 +58,8 @@ export default class CognitoService extends Base{
         await this.cognitoService.deleteUser(params).promise();
       }catch(error:any){
         if(error.code === "NotAuthorizedException") throw new CustomError(ErrorNM.IncorrectToken);
-
+        if(error.code === "UserNotFoundException") throw new CustomError(ErrorNM.UserNotFound);
+        
         this.handleUnkownException(error);
       }
     }

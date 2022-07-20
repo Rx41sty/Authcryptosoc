@@ -59,11 +59,8 @@ export default class CognitoService extends Base{
       }catch(error:any){
         if(error.code === "NotAuthorizedException") throw new CustomError(ErrorNM.IncorrectToken);
         if(error.code === "UserNotFoundException") throw new CustomError(ErrorNM.UserNotFound);
-        
+
         this.handleUnkownException(error);
       }
     }
-
-  
-
 }

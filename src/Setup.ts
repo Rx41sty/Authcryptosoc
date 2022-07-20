@@ -19,7 +19,6 @@ container.register({
   authController: asClass(authController)
 });
 let Auth = container.resolve('authController');
-console.log()
 
 app.post('/signup', (req, res) => {
   Auth.signUp(req, res);
@@ -33,7 +32,7 @@ app.get('/signout', Auth.verifytoken, (req, res) => {
   Auth.signout(req, res);
 });
 
-app.get('/delete', (req, res) => {
+app.get('/delete', Auth.verifytoken, (req, res) => {
   Auth.delete(req, res);
 });
 

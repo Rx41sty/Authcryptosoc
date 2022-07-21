@@ -2,7 +2,7 @@ import request from 'supertest';
 
 import app from '../Setup.js';
 import { ErrorNM } from '../Error.js';
-import AWS from 'aws-sdk';
+import AWS, { AWSError } from 'aws-sdk';
 jest.mock('aws-sdk');
 
 describe('Testing Authorization', function() {
@@ -19,6 +19,19 @@ describe('Testing Authorization', function() {
     expect(response.header['set-cookie']).toEqual(["token=expected; Path=/"])
     expect(response.status).toEqual(200);
     expect(response.body.data.success).toEqual(true);
+  });
+
+  it('sign fail with incorrect user/pass',  async function() {
+    AWS.CognitoIdentityServiceProvider.prototype.initiateAuth = jest.fn().mockReturnValue({
+     promise: jest.fn().mockRejectedValue({ code: "NotAuthorizedException" })});
+
+    const response = await request(app)
+      .post('/signin')
+      .send('username=Test')
+      .send('password=wrong')
+     expect(response.status).toEqual(400);
+     expect(response.body.error.code).toEqual(ErrorNM.NotAuthorized);
+     
 
   });
 });

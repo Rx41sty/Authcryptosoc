@@ -5,8 +5,8 @@
   "description": "Authentication/Authorization service for cryptosoc",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
     "compile": "tsc",
+    "test": "\"npm run compile\" && jest --config jest.config.fix.cjs",
     "start": "node index.js",
     "both": "tsc && node index.js",
     "dev": "nodemon -e ts  --exec \"npm run compile && npm run start\""

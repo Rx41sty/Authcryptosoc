@@ -1,9 +1,11 @@
 import request from 'supertest';
+import AWS from 'aws-sdk';
 
 import app from '../Setup.js';
 import { ErrorNM } from '../Error.js';
-import AWS from 'aws-sdk';
+
 jest.mock('aws-sdk');
+//jest.mock('../Controller/Auth');
 
 describe('Testing Authorization', function() {
   it('signin success', async function() {
@@ -98,6 +100,18 @@ describe('Testing Registration', function() {
     expect(response.body.error.code).toEqual(ErrorNM.UsernameExists);
   });
 
+  // it('register fail: registering while logged in', async function() {
+  //   AWS.CognitoIdentityServiceProvider.prototype.signUp = jest.fn().mockReturnValue({
+  //     promise: jest.fn().mockRejectedValue({ code: "UsernameExistsException" })});
+  //   const response = await request(app)
+  //     .post('/signup')
+  //     .send('username=Testuser')
+  //     .send('password=Testpassword$')
+  //     .send('email=testemail@email.com')
+  //   expect(response.status).toEqual(400);
+  //   expect(response.body.error.code).toEqual(ErrorNM.UsernameExists);
+  // });
+
 // describe('Testing delete', function() {
 //   it('signin success', async function() {
 //     const response = await request(app)
@@ -108,3 +122,5 @@ describe('Testing Registration', function() {
 //     expect(response.body.data.success).toEqual(true);
 //   });
  });
+
+ 

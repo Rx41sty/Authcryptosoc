@@ -1,4 +1,4 @@
 node_modules/
+coverage/
 config/creds.cmd
 *.js
-/coverage

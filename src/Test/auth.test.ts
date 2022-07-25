@@ -23,7 +23,7 @@ describe('Testing Authorization', function() {
     expect(response.body.data.success).toEqual(true);
   });
 
-  it('sign fail with incorrect user/pass',  async function() {
+  it('fail with incorrect user/pass',  async function() {
     AWS.CognitoIdentityServiceProvider.prototype.initiateAuth = jest.fn().mockReturnValue({
      promise: jest.fn().mockRejectedValue({ code: "NotAuthorizedException" })});
 
@@ -35,7 +35,8 @@ describe('Testing Authorization', function() {
      expect(response.body.error.code).toEqual(ErrorNM.NotAuthorized);
   });
 
-  it('sign fail because user did not confirm',  async function() {
+
+  it('fail because user did not confirm',  async function() {
     AWS.CognitoIdentityServiceProvider.prototype.initiateAuth = jest.fn().mockReturnValue({
      promise: jest.fn().mockRejectedValue({ code: "UserNotConfirmedException" })});
 
@@ -45,6 +46,20 @@ describe('Testing Authorization', function() {
       .send('password=Testtest123$')
      expect(response.status).toEqual(400);
      expect(response.body.error.code).toEqual(ErrorNM.UserNotConfirmed);
+  });
+
+  it('fail because already logged in',  async function() {
+    CognitoJwtVerifier.prototype.verify = jest.fn().mockReturnValue({
+      promise: jest.fn().mockResolvedValue({})});
+      
+    CognitoJwtVerifier.create = jest.fn().mockReturnValue({verify: () => {return Promise.resolve();}});
+
+    const response = await request(app)
+      .post('/signin')
+      .send('username=Test')
+      .send('password=Testtest123$')
+     expect(response.status).toEqual(400);
+     expect(response.body.error.code).toEqual(ErrorNM.UserAuthenticated);
   });
 });
 

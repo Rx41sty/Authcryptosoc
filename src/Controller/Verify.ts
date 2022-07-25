@@ -3,44 +3,21 @@ import {Request, Response, NextFunction} from 'express';
 
 import { CustomError, ErrorNM } from '../Error.js';
 import BaseController from './Base.js';
+import CognitoService from '../Service/Cognito';
 
 export default class VerifyController extends BaseController{
-    constructor(){
+    private cognito:CognitoService;
+    constructor(CognitoSC:CognitoService){
         super();
+        this.cognito = CognitoSC;
     }
-
-    public isUserAuthenticated = async (req:Request, res:Response) => {
-        const verifier = CognitoJwtVerifier.create({
-            userPoolId: process.env.AWS_COGNITO_USER_POOL_ID!,
-            tokenUse: "access",
-            clientId: process.env.AWS_COGNITO_CLIENT_ID!,
-          });
-        
-          try {
-              let token = req.cookies['token'];
-              await verifier.verify(token);
-              return true;
-          } catch(err:any) {
-              return false;
-          }
-    }
-
-    public allowAuthenticated = async (req:Request, res:Response, next:NextFunction) => {
-        try{
-            if(await this.isUserAuthenticated(req, res)) next();
+    public verifyToken = async (req:Request, res:Response, next:NextFunction) => {
+        if(req.cookies === undefined || req.cookies['token'] === undefined ||
+            !await this.cognito.isTokenAuthentic(req.cookies['token'])){
+                this.handleException(res, new CustomError(ErrorNM.IncorrectToken));
+                return;
         }
-        catch(err:any){
-            this.handleException(res, new CustomError(ErrorNM.IncorrectToken));
-        }      
+        next();
     }
-
-    public allowNotAuthenticated = async (req:Request, res:Response, next:NextFunction) => {
-        if(await this.isUserAuthenticated(req, res)){
-            next();
-        }
-        this.handleException(res, new CustomError(ErrorNM.IncorrectToken));
-    }
-
-
 
 }

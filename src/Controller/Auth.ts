@@ -15,7 +15,7 @@ export default class AuthController extends BaseController{
     public async signUp(req:Request, res:Response){
         let {username, password, email} = req.body;
         try{
-            await this.cognito.signUp(username, password, email);
+            await this.cognito.signUp(username, password, email, req.cookies);
             this.handleResponse(res);
         }catch(err:any){
             this.handleException(res, err);
@@ -25,7 +25,7 @@ export default class AuthController extends BaseController{
     public async signIn(req:Request, res:Response){
         let {username, password} = req.body;
         try{
-            let token:string =  await this.cognito.signIn(username, password);
+            let token:string =  await this.cognito.signIn(username, password, req.cookies);
             res.cookie('token', token);//{httpOnly: true});
             this.handleResponse(res);
         }catch(err:any){
@@ -38,18 +38,9 @@ export default class AuthController extends BaseController{
         this.handleResponse(res);
     }
 
-    public async delete(req:Request, res:Response){
-        let token:string = "";
-        console.log("Tring to delete up in this bitch")
-        if(req.cookies !== undefined && req.cookies['token'] !== undefined){
-            token = req.cookies['token'];
-        }else{
-            this.handleException(res, new CustomError(ErrorNM.IncorrectToken));
-            return;
-        }
-        
+    public async delete(req:Request, res:Response){ 
         try{
-            await this.cognito.delete(token);
+            await this.cognito.delete(req.cookies);
             this.handleResponse(res);
         }catch(err:any){
             this.handleException(res, err);

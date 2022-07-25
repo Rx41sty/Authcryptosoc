@@ -5,7 +5,8 @@ export class CustomError extends Error{
         [ErrorNM.IncorrectToken, "You are not logged in"],
         [ErrorNM.UserNotConfirmed, "Username is not confirmed"],
         [ErrorNM.UserNotFound, "User does not exist"],
-
+        [ErrorNM.UserAuthenticated, "Please log out and try again"],
+        [ErrorNM.InvalidParameter, "Parameters are not provided"],
         [ErrorNM.Unknown, "Unknown error"]
     ]);
     constructor(private readonly errorCode: number) {
@@ -27,6 +28,8 @@ export enum ErrorNM{
     IncorrectToken,
     UserNotConfirmed,
     UserNotFound,
+    UserAuthenticated,
+    InvalidParameter,
     
 
     Unknown

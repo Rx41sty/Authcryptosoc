@@ -1,11 +1,11 @@
 import request from 'supertest';
 import AWS from 'aws-sdk';
-
+import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import app from '../Setup.js';
 import { ErrorNM } from '../Error.js';
 
 jest.mock('aws-sdk');
-//jest.mock('../Controller/Auth');
+jest.mock('aws-jwt-verify');
 
 describe('Testing Authorization', function() {
   it('signin success', async function() {
@@ -62,32 +62,6 @@ describe('Testing Registration', function() {
     expect(response.body.data.success).toEqual(true);
   });
 
-  it('sign in after registration', async function() {
-    AWS.CognitoIdentityServiceProvider.prototype.signUp = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({})});
-
-    AWS.CognitoIdentityServiceProvider.prototype.initiateAuth = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({ AuthenticationResult: { AccessToken: "expected" } })
-    });
-
-    let response = await request(app)
-      .post('/signup')
-      .send('username=Testuser')
-      .send('password=Testpassword$')
-      .send('email=testemail@email.com')
-    expect(response.status).toEqual(200);
-    expect(response.body.data.success).toEqual(true);
-
-    response = await request(app)
-      .post('/signin')
-      .send('username=Testuser')
-      .send('password=Testpassword$')
-      expect(response.header).toHaveProperty('set-cookie')
-      expect(response.header['set-cookie']).toEqual(["token=expected; Path=/"])
-      expect(response.status).toEqual(200);
-      expect(response.body.data.success).toEqual(true);
-  });
-
   it('register fail: registering already registered user', async function() {
     AWS.CognitoIdentityServiceProvider.prototype.signUp = jest.fn().mockReturnValue({
       promise: jest.fn().mockRejectedValue({ code: "UsernameExistsException" })});
@@ -99,28 +73,35 @@ describe('Testing Registration', function() {
     expect(response.status).toEqual(400);
     expect(response.body.error.code).toEqual(ErrorNM.UsernameExists);
   });
-
-  // it('register fail: registering while logged in', async function() {
-  //   AWS.CognitoIdentityServiceProvider.prototype.signUp = jest.fn().mockReturnValue({
-  //     promise: jest.fn().mockRejectedValue({ code: "UsernameExistsException" })});
-  //   const response = await request(app)
-  //     .post('/signup')
-  //     .send('username=Testuser')
-  //     .send('password=Testpassword$')
-  //     .send('email=testemail@email.com')
-  //   expect(response.status).toEqual(400);
-  //   expect(response.body.error.code).toEqual(ErrorNM.UsernameExists);
-  // });
-
-// describe('Testing delete', function() {
-//   it('signin success', async function() {
-//     const response = await request(app)
-//       .post('/signin')
-//       .send('username=Test')
-//       .send('password=Testtest123$')
-//     expect(response.status).toEqual(200);
-//     expect(response.body.data.success).toEqual(true);
-//   });
  });
 
+ describe('Testing delete', function() {
+  it('delete success', async function() {
+    AWS.CognitoIdentityServiceProvider.prototype.deleteUser = jest.fn().mockReturnValue({
+      promise: jest.fn().mockResolvedValue({})});
+
+    CognitoJwtVerifier.prototype.verify = jest.fn().mockReturnValue({
+      promise: jest.fn().mockResolvedValue({})});
+      
+    CognitoJwtVerifier.create = jest.fn().mockReturnValue({verify: () => {return Promise.resolve();}});  
+    
+    const response = await request(app)
+      .get('/delete')
+      .set('Cookie', 'token=expected')
+    expect(response.status).toEqual(200);
+    expect(response.body.data.success).toEqual(true);
+  });
+
+  it('delete fail, not logged in', async function() {
+    CognitoJwtVerifier.prototype.verify = jest.fn().mockReturnValue({
+      promise: jest.fn().mockRejectedValue({})});
+      
+    CognitoJwtVerifier.create = jest.fn().mockReturnValue({verify: () => {return Promise.resolve();}});  
+    
+    const response = await request(app)
+      .get('/delete')
+    expect(response.status).toEqual(400);
+    expect(response.body.error.code).toEqual(ErrorNM.IncorrectToken);
+  });
+ });
  

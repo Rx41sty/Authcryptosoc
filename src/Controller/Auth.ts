@@ -1,6 +1,5 @@
-import {Request, Response, NextFunction} from 'express';
+import {Request, Response} from 'express';
 import CognitoService from '../Service/Cognito';
-import { CognitoJwtVerifier } from 'aws-jwt-verify';
 
 import { CustomError, ErrorNM } from '../Error.js';
 import BaseController from './Base.js';
@@ -41,6 +40,7 @@ export default class AuthController extends BaseController{
 
     public async delete(req:Request, res:Response){
         let token:string = "";
+        console.log("Tring to delete up in this bitch")
         if(req.cookies !== undefined && req.cookies['token'] !== undefined){
             token = req.cookies['token'];
         }else{
@@ -53,22 +53,6 @@ export default class AuthController extends BaseController{
             this.handleResponse(res);
         }catch(err:any){
             this.handleException(res, err);
-        }
-    }
-
-    public verifytoken = async (req:Request, res:Response, next:NextFunction) => {
-        const verifier = CognitoJwtVerifier.create({
-          userPoolId: process.env.AWS_COGNITO_USER_POOL_ID!,
-          tokenUse: "access",
-          clientId: process.env.AWS_COGNITO_CLIENT_ID!,
-        });
-      
-        try {
-            let token = req.cookies['token'];
-            const payload = await verifier.verify(token);
-            next();
-        } catch {
-          this.handleException(res, new CustomError(ErrorNM.IncorrectToken));
         }
     }
 }

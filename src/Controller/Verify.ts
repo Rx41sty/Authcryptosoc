@@ -1,9 +1,9 @@
-import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import {Request, Response, NextFunction} from 'express';
 
+import CognitoService from '../Service/Cognito.js';
 import { CustomError, ErrorNM } from '../Error.js';
 import BaseController from './Base.js';
-import CognitoService from '../Service/Cognito';
+
 
 export default class VerifyController extends BaseController{
     private cognito:CognitoService;

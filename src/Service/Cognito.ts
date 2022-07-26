@@ -12,6 +12,7 @@ export default class CognitoService extends Base{
         this.cognitoService = new AWS.CognitoIdentityServiceProvider();
     }
     public async signUp(username:string, password:string, email:string,  cookies: { token:string }):Promise<void>{
+      await this.forbidAuthenticated(cookies);
       var params = {
           ClientId: this.clientId,
           Username: username,
@@ -20,16 +21,18 @@ export default class CognitoService extends Base{
       };
       
       try {
-        this.forbidAuthenticated(cookies);
         await this.cognitoService.signUp(params).promise();
       } catch (error:any) {
         if(error.code === "UsernameExistsException") throw new CustomError(ErrorNM.UsernameExists);
+        if(error.code === "InvalidParameterException") throw new CustomError(ErrorNM.InvalidParameter);
 
         this.handleUnkownException(error);
       }
     }
     
     public async signIn(username: string, password: string, cookies: { token:string }): Promise<string> {
+      await this.forbidAuthenticated(cookies);
+
       let params = {
         AuthFlow: 'USER_PASSWORD_AUTH',
         ClientId: this.clientId,
@@ -40,8 +43,6 @@ export default class CognitoService extends Base{
       };
 
       try {
-        this.forbidAuthenticated(cookies);
-
         let { AuthenticationResult } = await this.cognitoService.initiateAuth(params).promise();
         return AuthenticationResult !== undefined ?  AuthenticationResult.AccessToken! : ""; 
   
@@ -76,8 +77,8 @@ export default class CognitoService extends Base{
       });
     
       try {
-          await verifier.verify(token);
-          return true;
+        await verifier.verify(token);
+        return true;
       } catch(err:any) {
         return false;
       }

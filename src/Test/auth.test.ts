@@ -136,6 +136,10 @@ describe('Testing Registration', function() {
  });
 
  describe('Testing delete', function() {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+  
   it('delete success', async function() {
     AWS.CognitoIdentityServiceProvider.prototype.deleteUser = jest.fn().mockReturnValue({
       promise: jest.fn().mockResolvedValue({})});
